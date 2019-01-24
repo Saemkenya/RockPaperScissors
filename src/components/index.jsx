@@ -12,6 +12,7 @@ class Main extends Component {
     width: 80,
     height: 80
   }
+  // pass in this elements using an array
   render () {
     return (
       <div className='m-5'>
@@ -96,6 +97,7 @@ class Main extends Component {
           </div>
           <section className='jumbotron text-center'>
             <div className='container'>
+              {/* pass in this elements using an array */}
               <h2>
                 <a href={0} className='btn btn-secondary my-2 m-4'>
                   <img
@@ -128,7 +130,7 @@ class Main extends Component {
 
               <h4 className='lead text-muted'>
                 Standard Rock Paper Scissors rules apply, rock crushes scissors, scissors cuts paper while paper covers
-                rock.
+                rock. Earn a Jade Stone for every round with more than 5 gold coins score.
               </h4>
             </div>
           </section>

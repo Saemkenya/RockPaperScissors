@@ -182,7 +182,7 @@ class App extends Component {
     }
 
     if (this.state.tryCharms > 0) {
-      alert(`You have ${this.state.tryCharms} charms, redeam for extra lives?`)
+      alert(`You have ${this.state.tryCharms} charm(s), redeam for extra lives?`)
       newState.lives = this.state.tryCharms
       newState.tryCharms = 0
       this.setState({ newState })

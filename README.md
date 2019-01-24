@@ -5,6 +5,7 @@ The code needs major refactoring and can be used as bad example.
 
 ### Implementation Path
 
+-   [ ] -   Do major refactoring to [index.js] to pass arrays
 -   [ ] -   React better to results {
         popups for rewards,
         warning and error btns on relevant events,
