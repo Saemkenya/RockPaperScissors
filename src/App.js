@@ -64,11 +64,13 @@ class App extends Component {
       return this.scissors
     }
   }
-  handleRockChoice = () => {
+  hasLife = () => {
     if (this.state.lives <= 0) {
       this.gameOver()
-      return
     }
+  }
+  handleRockChoice = () => {
+    this.hasLife()
     let currentState = this.state
     currentState.choice = this.rock
     currentState.compChoice = this.randCompChoice()
@@ -77,10 +79,7 @@ class App extends Component {
   }
 
   handlePaperChoice = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
+    this.hasLife()
     let currentState = this.state
     currentState.choice = this.paper
     currentState.compChoice = this.randCompChoice()
@@ -89,10 +88,7 @@ class App extends Component {
   }
 
   handleScissorsChoice = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
+    this.hasLife()
     let currentState = this.state
     currentState.choice = this.scissors
     currentState.compChoice = this.randCompChoice()
@@ -140,10 +136,7 @@ class App extends Component {
     this.setState({ currState })
   }
   win = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
+    this.hasLife()
     this.updateLives()
     let currState = this.state
     currState.goldCoins++
@@ -151,10 +144,7 @@ class App extends Component {
     this.setState({ currState })
   }
   draw = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
+    this.hasLife()
     this.updateLives()
     let currState = this.state
     currState.tryCharms++
@@ -162,10 +152,7 @@ class App extends Component {
     this.setState({ currState })
   }
   lose = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
+    this.hasLife()
     this.updateLives()
     let currState = this.state
     currState.outCome = 'You loose!'
