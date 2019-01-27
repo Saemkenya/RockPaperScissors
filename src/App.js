@@ -1,276 +1,122 @@
 import React, { Component, Fragment } from 'react'
 import './App.css'
-import NavBar from './components/nav_bar'
-import Main from './components/index'
+import Game from './Game'
+import SignIn from './components/sign_in'
+import CryptoJS from 'crypto-js'
 
 class App extends Component {
   state = {
-    tryCharms: 0,
-    goldCoins: 0,
-    jadeStones: 0,
-    lives: 10,
-    choice: 'No Choice',
-    compChoice: 'No Choice',
-    outCome: 'Start Playing!',
-    choices: [{ id: 1, value: 'ROCK' }, { id: 2, value: 'PAPER' }, { id: 3, value: 'SCISSORS' }]
-  }
+    token: null,
+    email: '',
+    password: '',
 
-  constructor (props) {
-    super(props)
-    this.rock = 'ROCK'
-    this.paper = 'PAPER'
-    this.scissors = 'SCISSORS'
+    response: null,
+    salute: null,
+    name: null,
+    accRole: null,
+    admRole: null,
+    gdnRole: null,
+    libRole: null,
+    mngRole: null,
+    tutRole: null
   }
-
+  handleTokenChange = token => {
+    this.setState({
+      token: token
+    })
+  }
   componentDidMount () {
     console.log('Application mounted, make ajax calls now!')
   }
 
-  handleIncrement = counter => {
-    const counters = [...this.state.counters]
-    const index = counters.indexOf(counter)
-    counters[index] = { ...counter }
-    counters[index].value++
-    this.setState({ counters })
+  handleSignIn = event => {
+    event.preventDefault()
+    var creditString = `${this.state.email}:${this.state.password}`
+    var credentials = CryptoJS.enc.Utf8.parse(creditString) // WordArray object
+    var base64 = CryptoJS.enc.Base64.stringify(credentials)
+    this.getUser(base64)
   }
 
-  styles = {
-    fontSize: 20,
-    fontWeight: 'bold'
-  }
-
-  handleReset = () => {
-    const counters = this.state.counters.map(c => {
-      c.value = 0
-      return c
+  handlePasswordUpdate = password => {
+    this.setState({
+      password: password
     })
-    this.setState({ counters })
-  }
-  handleDelete = counterId => {
-    const counters = this.state.counters.filter(c => c.id !== counterId)
-    this.setState({ counters })
-
-    console.log('handle delete called with ' + counterId)
-  }
-  randCompChoice = () => {
-    let rand = Math.random()
-    if (rand <= 0.3) {
-      return this.rock
-    }
-    if (rand <= 0.6 && rand > 0.3) {
-      return this.paper
-    }
-    if (rand >= 0.6) {
-      return this.scissors
-    }
-  }
-  hasLife = () => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-    }
-  }
-  handleRockChoice = () => {
-    this.hasLife()
-    let currentState = this.state
-    currentState.choice = this.rock
-    currentState.compChoice = this.randCompChoice()
-    this.setState({ currentState })
-    this.handlePlay(this.state.compChoice, this.state.choice)
   }
 
-  handlePaperChoice = () => {
-    this.hasLife()
-    let currentState = this.state
-    currentState.choice = this.paper
-    currentState.compChoice = this.randCompChoice()
-    this.setState({ currentState })
-    this.handlePlay(this.state.compChoice, this.state.choice)
+  handleEmailUpdate = email => {
+    this.setState({
+      email: email
+    })
   }
 
-  handleScissorsChoice = () => {
-    this.hasLife()
-    let currentState = this.state
-    currentState.choice = this.scissors
-    currentState.compChoice = this.randCompChoice()
-    this.setState({ currentState })
-    this.handlePlay(this.state.compChoice, this.state.choice)
-  }
-
-  getBadgeClasses () {
-    let classes = 'badge m-2 badge-'
-    classes += this.props.scores.lives.value <= 3 ? 'warning' : 'primary'
-    return classes
-  }
-  formatCount () {
-    const { value: count } = this.props.scores.lives
-    return count === 0 ? 'Zero' : count
-  }
   render () {
     return (
       <Fragment>
-        <NavBar
-          life={this.state.lives}
-          choice={this.state.choice}
-          compChoice={this.state.compChoice}
-          outCome={this.state.outCome}
-          onGetBadge={this.state.getBadgeClasses}
-          onStyles={this.styles}
-          onFormat={this.props.formatCount}
-          onRestart={this.restartGame}
-        />
-        <main className='container'>
-          <Main
-            scores={this.state}
-            onPaperChoice={this.handlePaperChoice}
-            onScissorsChoice={this.handleScissorsChoice}
-            onRockChoice={this.handleRockChoice}
-            onIncrement={this.state.handleIncrement}
+        {this.state.token ? (
+          <Game names={this.state.salute + '  ' + this.state.name} email={this.state.email} />
+        ) : (
+          <SignIn
+            onSignIn={this.handleSignIn}
+            onToken={this.handleTokenChange}
+            onEmailUpdate={this.handleEmailUpdate}
+            onPasswordUpdate={this.handlePasswordUpdate}
           />
-        </main>
+        )}
       </Fragment>
     )
   }
-  updateLives = () => {
-    let currState = this.state
-    currState.lives--
-    this.setState({ currState })
-  }
-  win = () => {
-    this.hasLife()
-    this.updateLives()
-    let currState = this.state
-    currState.goldCoins++
-    currState.outCome = 'You won!'
-    this.setState({ currState })
-  }
-  draw = () => {
-    this.hasLife()
-    this.updateLives()
-    let currState = this.state
-    currState.tryCharms++
-    currState.outCome = "It's a draw!"
-    this.setState({ currState })
-  }
-  lose = () => {
-    this.hasLife()
-    this.updateLives()
-    let currState = this.state
-    currState.outCome = 'You loose!'
-    this.setState({ currState })
-  }
-  restartGame = () => {
-    let gameState = this.state
-    gameState.lives = 10
-    gameState.tryCharms = 0
-    gameState.goldCoins = 0
-    gameState.choice = 'No Choice'
-    gameState.compChoice = 'No Choice'
-    gameState.outCome = 'Game Restarted!'
-    this.setState({ gameState })
-  }
-  retryGame = () => {
-    let newState = this.state
-    if (this.state.goldCoins > 5) {
-      newState.jadeStones++
-      newState.goldCoins = 0
-      newState.tryCharms = 0
-      newState.lives = 10
-      newState.outCome = 'Keep playing'
-      this.setState({ newState })
-      alert('You grow victorius, You get one Jade Stone')
-      return
-    }
 
-    if (this.state.tryCharms > 0) {
-      alert(`You have ${this.state.tryCharms} charm(s), redeam for extra lives?`)
-      newState.lives = this.state.tryCharms
-      newState.tryCharms = 0
-      this.setState({ newState })
-      return
+  getUser = basicBase64 => {
+    let myheaders = {
+      Authorization: `Basic ${basicBase64}`,
+      'Content-Type': 'application/json'
     }
-    if (this.state.goldCoins === 5) {
-      alert(`You got exactly ${this.state.goldCoins} gold coins, It's a draw.`)
-      return
-    }
-    if (this.state.jadeStones > 0) {
-      alert(`You got only ${this.state.goldCoins} gold coins, You won ${this.state.jadeStones} jade stones.`)
-      return
-    }
-    alert(`You got only ${this.state.goldCoins} gold coins, You lost the game`)
+    console.log(myheaders)
+
+    fetch('http://localhost:18700/auth', {
+      method: 'POST',
+      body: JSON.stringify(''),
+      headers: myheaders
+    })
+      .then(
+        function (response) {
+          return response.body.getReader().read()
+        },
+        function (error) {
+          console.log(error.message)
+        }
+      )
+      // .then(data => data.map(item => console.log(item)))
+      .then(data => new TextDecoder('utf-8').decode(data.value))
+      .then(newString => this.saveUserData(newString))
   }
-  gameOver = () => {
-    this.retryGame()
-    let currState = this.state
-    currState.outCome = 'Game Over!'
-    currState.choice = 'No Choice'
-    currState.compChoice = 'No Choice'
-    this.setState({ currState })
+  saveUserData = data => {
+    let newData = data.slice(1, -1)
+    let items = newData.replace('"roles":{', '')
+    let items1 = items.replace('"user":[', '')
+    let items2 = items1.replace('"ress_token":', '')
+    let items3 = items2.replace(']', '')
+    let items4 = items3.replace('}', '')
+    let itemsArray = items4.split(',')
+    this.updateState(itemsArray)
   }
-  handlePlay = (compChoice, choice) => {
-    if (this.state.lives <= 0) {
-      this.gameOver()
-      return
-    }
-    if (compChoice === this.rock) {
-      switch (choice) {
-        case this.rock: {
-          this.draw()
-          break
-        }
-        case this.paper: {
-          this.win()
-          break
-        }
-        case this.scissors: {
-          this.lose()
-          break
-        }
-        default: {
-          console.log('Invalid choice')
-          break
-        }
-      }
-    }
-    if (compChoice === this.paper) {
-      switch (choice) {
-        case this.rock: {
-          this.lose()
-          break
-        }
-        case this.paper: {
-          this.draw()
-          break
-        }
-        case this.scissors: {
-          this.win()
-          break
-        }
-        default: {
-          console.log('Invalid choice')
-          break
-        }
-      }
-    }
-    if (compChoice === this.scissors) {
-      switch (choice) {
-        case this.rock: {
-          this.win()
-          break
-        }
-        case this.paper: {
-          this.lose()
-          break
-        }
-        case this.scissors: {
-          this.draw()
-          break
-        }
-        default: {
-          console.log('Invalid choice')
-          break
-        }
-      }
-    }
+  updateState = items => {
+    console.log(items)
+    this.setState({
+      response: items[0].slice(1),
+      email: items[1].slice(1, -1),
+      salute: items[2].slice(1, -1),
+      name: items[3].slice(1, -1),
+      accRole: items[4].slice(1),
+      admRole: items[5].slice(1),
+      gdnRole: items[6].slice(1),
+      libRole: items[7].slice(1),
+      mngRole: items[8].slice(1),
+      tutRole: items[9].slice(1),
+      token: items[10].slice(1, -1)
+    })
+    this.handleTokenChange(items[10])
+    console.log(this.state)
   }
 }
 
